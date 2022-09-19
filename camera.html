@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<HTML>
+    <HEAD>
+        <style>
+        h1{font-size:2.5em;background-color:lightgray;margin:5px;padding:5px;}
+        button{font-size:.5em;}
+        input{font-size:1.3em;}
+        #scanData{width:90%;margin:10px;}
+        </style>
+		<script type="text/javascript" charset="utf-8" src="./ebapi-modules.js"></script>
+		<script type="text/javascript" charset="utf-8" src="./elements.js"></script>
+    </HEAD>
+    <BODY>
+        <h1>Barcode
+        <button onclick="window.location.href='./index.html'">Home</button>
+        <button onclick="EB.Application.quit();">Quit</button>
+        </h1>
+        <div id=content>
+			
+			<input id="scanData" type=text > 
+			<input type=button value="Take" onClick="takePic()" >
+			<input type=button value="Open Capture Area" onClick="fnImgCaptureEnable()" >
+			<input type=button value="Capture" onClick="fnImgCapture()" >
+			<input type=button value="Cancel" onClick="fnImgCaptureDisable()" >
+			<input type=button value="Clear"   onClick="fnClearImage()" >
+			<img src="" id="imgdata" />
+	
+			<script>
+			
+			function takePic() {
+			    EB.Camera.takePicture({'outputFormat':'dataUri'}, takeAndAnalizeFunc);
+				document.getElementById('scanData').value = "omg";  
+			}
+			function takeAndAnalizeFunc(data) {
+			   EB.Barcode.barcode_recognize(data.image_uri, printResult);
+			}
+			function printResult(data){
+				document.getElementById('scanData').value = data;  
+			}
+			
+			function fnImgCaptureEnable(){
+               imager.top = 155;
+               imager.left = 25;
+               imager.width = 350;
+               imager.height = 240;
+               imager.imagerCaptureEvent = 'onImageCapture(%json)';
+               keyCapture.triggerEvent = 'fnImgCapture()';       
+               imager.enable(); 
+             }
+            function fnImgCaptureDisable() { 
+              imager.disable();
+              keyCapture.triggerEvent = ''; 
+            }function fnImgCapture() { 
+                imager.capture(); 
+                console.log("imager.capture() has been called");
+            }function onImageCapture(capData){
+              console.log(capData);
+              document.getElementById("imgdata").src = capData.imageData;
+              fnImgCaptureDisable();
+              
+            }
+            function fnClearImage() { 
+                document.getElementById("content").innerHTML = "<img src='' id=imgdata />";
+                console.log("image cleared");
+            }
+			</script>
+        </div>
+    </BODY>
+</HTML>
